@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Events\MessageEvent;
 use App\Message;
 use App\User;
 use Auth;
@@ -20,7 +21,17 @@ class MessageController extends Controller
         return view('message',compact('data'));
     }
 
+    public function chat($id) {
+        // $data = Message::where('sender_id', Auth::user()->id)
+        //         ->where('receiver_id', $id)
+        //         ->latest()->get()->toArray();
+        
+         return view('chat', compact('id'));
+    }
+
     public function send(Request $request) {
+
+        //dd(request()->all());
         $sender_id = Auth::user()->id;
         $receiver_id = $request->receiver_id;
 
@@ -37,9 +48,10 @@ class MessageController extends Controller
                 $data['sender_name'] = $sender['name'];
                 $data['receiver_id'] = $receiver_id;
                 $data['content'] = $message->message;
-                $data['created_at'] = $message->created_at;
+                $data['created_at'] = $message->created_at->diffForHumans();
                 $data['message_id'] = $message->id;
 
+                event(new MessageEvent($data));
                 return response()->json([
                     'data' => $data,
                     'success' => true,

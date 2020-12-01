@@ -22,4 +22,5 @@ Auth::routes();
 Route::get('/home', 'MessageController@index')->name('home');
 
 Route::resource('/message', 'MessageController');
+Route::get('/chat/{id}', 'MessageController@chat');
 Route::post('/send', 'MessageController@send');
